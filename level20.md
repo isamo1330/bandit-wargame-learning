@@ -18,41 +18,47 @@ Started by reading the man page for setuid to understand the concept:
 man setuid
 ```
 
-### Step 2 — Identify the setuid binary
-List the files in the home directory with full permissions:
+### Step 2 — Find the binary
+Listed the home directory:
 
 ```bash
-ls -l
+ls
 ```
 
-There is one file: `bandit20-do`, owned by `bandit20` with the setuid bit set (`-rwsr-x---`). The `s` in the owner's execute position means this binary runs with the privileges of its owner (bandit20), not the user who executes it (bandit19).
+Found `bandit20-do` highlighted in the terminal output.
 
-### Step 3 — Run the binary without arguments
-```bash
-./bandit20-do
-```
+### Step 3 — Trial and error
+Tried several approaches that didn't work:
 
-Output: `Run a command as another user. Example: ./bandit20-do id`
+- `man suconnect` — no manual entry
+- `what is suconnect` — command not found (meant `whatis`, and `suconnect` is from a later level anyway)
+- `setuid bandit20-do` — command `setuid` not found; it's a system call, not a command you run directly
+- `man setuid` — re-read the man page
+- `sudo setuid bandit20-do` — sudo error: `/usr/bin/sudo must be owned by uid 0 and have the setuid bit set`
 
-### Step 4 — Read the password file
-Since the binary runs commands as bandit20, and `/etc/bandit_pass/bandit20` is only readable by bandit20:
+The key realisation was that `bandit20-do` is already a setuid binary — you don't need to *apply* setuid to it, you just need to *execute* it with `./`.
 
+### Step 4 — Run the binary correctly
 ```bash
 ./bandit20-do cat /etc/bandit_pass/bandit20
 ```
 
-This prints the password for bandit20.
+The binary executes `cat` as user bandit20, reading the password file that only bandit20 can access.
 
 ## Password Found
 `0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO`
 
 ## What I Learned
 - The setuid bit (`s` in permissions) allows a binary to run with the file owner's privileges, not the caller's
-- `man setuid` explains how the setuid mechanism works at a system level
-- `ls -l` shows the `s` flag in the owner execute position when setuid is active
+- `setuid` is a system call / permission attribute, not a command you type — the binary already has it set
+- `sudo` wasn't available in the expected way on this system
+- Running a binary in the current directory requires `./` prefix
+- The `id` command can verify which user context a process is running under (`uid` vs `euid`)
 - Setuid binaries are a common privilege escalation mechanism in Linux — and a common target in security assessments
-- The `id` command is useful for verifying which user context a process is running under (`uid` vs `euid`)
 
 ## Screenshots
 ![Logged into bandit19, running man setuid to research the concept](screenshots/level-19-20/step-01.png)
-*Additional screenshots to be added.*
+![ls reveals bandit20-do binary](screenshots/level-19-20/step-02.png)
+![Trial and error — man suconnect, what is suconnect, setuid bandit20-do — all fail](screenshots/level-19-20/step-03.png)
+![More attempts — man setuid again, sudo setuid bandit20-do — sudo error](screenshots/level-19-20/step-04.png)
+![Correct command: ./bandit20-do cat /etc/bandit_pass/bandit20 — password found](screenshots/level-19-20/step-05.png)
