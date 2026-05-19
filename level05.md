@@ -9,40 +9,35 @@ ssh bandit4@bandit.labs.overthewire.org -p 2220
 ```
 Password: `2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ`
 
-## The Problem
-There are 10 files in `inhere/` and most are binary data. Opening binary files with `cat` produces garbage output. We need to identify which one contains ASCII text.
-
-Initial attempts from the home directory failed:
-```bash
-file ./-file*   # Fails outside the inhere directory
-cat inhere       # Fails - it's a directory
-cat ./-file07    # Fails - wrong directory
-```
-
 ## Solution
-Navigate into `inhere/` first, then use the `file` command with a wildcard to check all files at once:
+
+Navigate into `inhere` and use the `file` command to check the type of each file:
+
 ```bash
 cd inhere
 file ./-file*
 ```
-The output shows `./-file07: ASCII text` while all others show `data`. Read it with:
+
+The output shows all files are `data` (binary) except `./-file07`, which is `ASCII text` — the only human-readable one. Read it:
+
 ```bash
 cat ./-file07
 ```
 
+The password is printed.
+
 ## Password Found
-`4oQYVPkxZOOE0O5pTW81FB8j81xXGUQw`
+`4oQYVPkxZOOEO5pTW81FB8j81xXGUQw`
 
 ## What I Learned
-- The `file` command identifies file types based on content, not just the extension
-- Using wildcards (`*`) with `file` lets you check many files at once efficiently
-- Binary files show as `data`; readable ones show as `ASCII text`
-- Even inside a subdirectory, dashed filenames still need the `./` prefix
+- The `file` command identifies file types without relying on extensions
+- Using a glob (`*`) with `file` lets you check multiple files at once
+- Files starting with `-` still need the `./` prefix trick when passed to `cat`
+- Directly executing `./-file07` fails because the shell tries to run it as a program — `cat` is needed
 
 ## Screenshots
-![man file page](screenshots/level-04-05/step-01.png)
-![Trying file and cat from home directory](screenshots/level-04-05/step-02.png)
-![cat inhere fails - it's a directory](screenshots/level-04-05/step-03.png)
-![man file again for reference](screenshots/level-04-05/step-04.png)
-![cd inhere, file ./-file* identifies -file07 as ASCII](screenshots/level-04-05/step-05.png)
-![cat ./-file07 reveals the password](screenshots/level-04-05/step-06-password.png)
+![man file for reference](screenshots/level-04-05/step-01.png)
+![Attempted file ./-file* from home dir — path error](screenshots/level-04-05/step-02.png)
+![cat inhere showing it is a directory](screenshots/level-04-05/step-03.png)
+![cd inhere then file ./-file* — file07 identified as ASCII text](screenshots/level-04-05/step-05.png)
+![cat ./-file07 revealing the password](screenshots/level-04-05/step-06.png)

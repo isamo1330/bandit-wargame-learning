@@ -1,7 +1,7 @@
 # Level 1 → 2
 
 ## Objective
-The password is stored in a file called `-` (a dashed filename) in the home directory.
+The password is stored in a file called `-` in the home directory. Reading a file named `-` is tricky because the shell interprets `-` as stdin.
 
 ## Connection
 ```bash
@@ -9,24 +9,23 @@ ssh bandit1@bandit.labs.overthewire.org -p 2220
 ```
 Password: `ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If`
 
-## The Problem
-Running `cat -` doesn't work — the shell interprets `-` as stdin rather than a filename. Similarly, `cat ./-` initially seemed like the right approach but needed to be run correctly.
-
 ## Solution
-Prefix the filename with `./` to explicitly tell the shell it's a file path, not a flag:
+
+Simply running `cat -` won't work — the shell treats `-` as standard input and just hangs. The fix is to prefix the filename with `./` to tell the shell it's a file path, not a flag:
+
 ```bash
 cat ./-
 ```
+
+The password is printed immediately.
 
 ## Password Found
 `263JGJPfgU6LtdEvgfWU1XP5yac29mFx`
 
 ## What I Learned
-- Filenames starting with `-` are tricky because shells treat them as command flags
-- Prefixing with `./` forces the shell to treat it as a relative file path
-- This is a common gotcha in CTFs and real-world sysadmin work
+- Files named `-` are a classic Linux gotcha — the shell treats bare `-` as stdin
+- Prefixing with `./` forces the shell to treat the argument as a file path
+- This technique (`./filename`) is useful any time a filename starts with a special character
 
 ## Screenshots
-![Logged in as bandit1](screenshots/level-01-02/step-01.png)
-![cat ./- reveals the password](screenshots/level-01-02/step-03.png)
-![Password highlighted](screenshots/level-01-02/step-04.png)
+![Login and cat ./- revealing the password](screenshots/level-01-02/step-06.png)
