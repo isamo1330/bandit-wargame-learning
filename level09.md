@@ -26,5 +26,9 @@ A single password is printed.
 - Piping (`|`) chains commands: the output of `sort` becomes the input of `uniq`
 - `man sort` and `man uniq` were both consulted to confirm the right flags
 
+## Password Found
+`4CKMh1JI91bUIZZPXDqGanal4xvAg0JM`
+
 ## Screenshots
 ![data.txt output with sort and uniq commands in history, man pages consulted](screenshots/level-08-09/step-01.png)
+![sort data.txt | uniq -u revealing the unique password](screenshots/level-08-09/step-02.png)
